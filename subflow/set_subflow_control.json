@@ -1,0 +1,88 @@
+[
+    {
+        "id": "55fd71fe3ba2dcb5",
+        "type": "change",
+        "z": "0b36e4031c62503a",
+        "g": "c4b086097bb752f1",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "caltopoControl",
+                "pt": "flow",
+                "to": "caltopoControl",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 680,
+        "y": 1140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2fedc5d9c48f12d8",
+        "type": "inject",
+        "z": "0b36e4031c62503a",
+        "g": "c4b086097bb752f1",
+        "name": "Stop",
+        "props": [
+            {
+                "p": "caltopoControl",
+                "v": "false",
+                "vt": "bool"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 470,
+        "y": 1170,
+        "wires": [
+            [
+                "55fd71fe3ba2dcb5"
+            ]
+        ]
+    },
+    {
+        "id": "d5a7c67468ddd32b",
+        "type": "inject",
+        "z": "0b36e4031c62503a",
+        "g": "c4b086097bb752f1",
+        "name": "Start",
+        "props": [
+            {
+                "p": "caltopoControl",
+                "v": "true",
+                "vt": "bool"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 470,
+        "y": 1110,
+        "wires": [
+            [
+                "55fd71fe3ba2dcb5"
+            ]
+        ]
+    }
+]
