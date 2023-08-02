@@ -36,7 +36,7 @@ If using an SMS Locator in CalTopo and if you provide a callsign titled subject[
 
 ## INSTALLATION:
 1. Import subflow file to Node-RED
-2. Install using `npm`:  `npm i node-red-topo-pli-to-cot`
+2. Install using `npm`:  `npm install node-red-contrib-cot2xtopo`
 
 ## License & Copyright
 
