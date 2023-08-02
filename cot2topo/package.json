@@ -29,7 +29,8 @@
     "homepage": "https://github.com/clptak/node-red-cot-pli-to-topo/tree/main#readme",
     "node-red": {
           "nodes": {
-              "example-node": "node.js"
+              "example-node": "node.js",
+              "html": "cot2xtopo.html"
           }
       }
   }
