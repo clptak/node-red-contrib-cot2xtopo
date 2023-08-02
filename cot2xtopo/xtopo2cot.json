@@ -1,0 +1,278 @@
+{
+    "id": "d0e5b19e9da84916",
+    "type": "subflow",
+    "name": "xtopo2cot",
+    "info": "Parsing network kml from CalTopo to Cursor on Target for PLI",
+     "category": "parser",
+     "in": [
+        {
+            "x": 110,
+            "y": 270,
+            "wires": [
+                {
+                    "id": "060337234238faef"
+                }
+            ]
+        }
+    ],
+    "out": [
+        {
+            "x": 1190,
+            "y": 390,
+            "wires": [
+                {
+                    "id": "3d80a28ba6cdd03f",
+                    "port": 0                    }
+                ]
+        }
+    ],
+    "env": [],
+    "meta": {
+    "module": "node-red-contrib-cot2xtopo",
+        "version": "1.0.6",
+        "author": "Paul Clifton <paul.clifton@clptak.com>",
+        "desc": "Parsing network kml from CalTopo to Cursor on Target for PLI",
+        "keywords": "kml cot network-kml caltopo tak atak itak wintak sartopo nodered",
+        "license": "Apache-2.0"
+    },
+    "color": "#E9967A",
+    "inputLabels": [
+        "CalTopo Map ID"
+    ],
+    "outputLabels": [
+        "CoT Message"
+    ],
+    "icon": "font-awesome/fa-map-marker",
+    "flow" : [
+    {
+        "id": "060337234238faef",
+        "type": "http request",
+        "z": "d0e5b19e9da84916",
+        "name": "Get SARTopo KML",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://sartopo.com/m/{{{payload}}}?format=kml",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 270,
+        "y": 270,
+        "wires": [
+            [
+                "281c89443301900b"
+            ]
+        ]
+    },
+    {
+        "id": "281c89443301900b",
+        "type": "xml",
+        "z": "d0e5b19e9da84916",
+        "name": "",
+        "property": "payload",
+        "attr": "",
+        "chr": "",
+        "x": 440,
+        "y": 270,
+        "wires": [
+            [
+                "6dd8abb098f9fde3"
+            ]
+        ]
+    },
+    {
+        "id": "6dd8abb098f9fde3",
+        "type": "function",
+        "z": "d0e5b19e9da84916",
+        "name": "Split Array (Multiple Types per RX)",
+        "func": "for (var i = 0; i < msg.payload.kml.Document[0].Folder.length; i++) {\n    var newMsg = {};\n    newMsg.payload = msg.payload.kml.Document[0].Folder[i];\n    node.send(newMsg);\n}\nreturn null;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 670,
+        "y": 270,
+        "wires": [
+            [
+                "40abb2adbce323d8"
+            ]
+        ]
+    },
+    {
+        "id": "40abb2adbce323d8",
+        "type": "switch",
+        "z": "d0e5b19e9da84916",
+        "name": "TAK PLI Filter",
+        "property": "payload.name",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "LineStrings",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 380,
+        "y": 330,
+        "wires": [
+            [
+                "b26ade62742d5cee"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "b26ade62742d5cee",
+        "type": "change",
+        "z": "d0e5b19e9da84916",
+        "name": "Clean Up",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "topic",
+                "pt": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "statusCode",
+                "pt": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "headers",
+                "pt": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "responseUrl",
+                "pt": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "redirectList",
+                "pt": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "responseCookies",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 570,
+        "y": 330,
+        "wires": [
+            [
+                "9168125f016536a5"
+            ]
+        ]
+    },
+    {
+        "id": "863621bd9f1d112a",
+        "type": "function",
+        "z": "d0e5b19e9da84916",
+        "name": "TAK PLI - Split Placemark Array",
+        "func": "for (var i = 0; i < msg.payload.Placemark.length; i++) {\n    var newMsg = {};\n    newMsg.payload = msg.payload.Placemark[i];\n    node.send(newMsg);\n}\nreturn null;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 390,
+        "wires": [
+            [
+                "5a646d6b831ded6f"
+            ]
+        ]
+    },
+    {
+        "id": "9168125f016536a5",
+        "type": "switch",
+        "z": "d0e5b19e9da84916",
+        "name": "",
+        "property": "payload.Placemark[0].name[0]",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "Do_NOT_DELETE",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 760,
+        "y": 330,
+        "wires": [
+            [],
+            [
+                "863621bd9f1d112a"
+            ]
+        ]
+    },
+    {
+        "id": "5a646d6b831ded6f",
+        "type": "switch",
+        "z": "d0e5b19e9da84916",
+        "name": "",
+        "property": "payload.MultiGeometry",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nnull"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 760,
+        "y": 390,
+        "wires": [
+            [],
+            [
+                "3d80a28ba6cdd03f"
+            ]
+        ]
+    },
+    {
+        "id": "3d80a28ba6cdd03f",
+        "type": "function",
+        "z": "d0e5b19e9da84916",
+        "name": "JSON to PLI CoT",
+        "func": "/* Stale is Date.now() + miliseconds. \n Ruberic: 1000 Miliseconds in 1 Second\n Example: 5 Minutes, in Miliseconds, is 300000\n   (5 x 60 * 1000 )\n*/\nconst cinco = 1 * 60 * 1000;\nconst stale = new Date(Date.now() + 2 * cinco).toISOString();\n\n/*const randuuid = uuid.v4(); - USED FOR OBJECTS CREATED BY A UID*/\n\n//LOOKUP TABLES\nconst callidgnd = {\n    //'1' : 'Unit ID 1',\n    //'1337' : 'Unit ID 1337',\n    'do_not_delete' : 'NO CALLSIGN SET',\n    };\n\n/* Split Coordinates and choose latest */\nfunction splitStr(str, separator) {\n\n    // Function to split string\n    let newstring = str.split(separator);\n    return newstring;\n}\nvar lat = \"\";\nvar lon = \"\";\nif (msg.payload.LineString != null) {\n    if (msg.payload.LineString[0].coordinates[0] != null){\n        let str = msg.payload.LineString[0].coordinates[0];\n        let seperator = \",\"\n        /* Assign Location Data */\n        let latlon = splitStr(str,seperator).slice(-3);\n        lat = latlon[1];\n        lon = latlon[0].split('\\n',)[1];\n    } else if (msg.payload.Point[0].coordinates[0] != null) {\n        let str = msg.payload.Point[0].coordinates[0];\n        let seperator = \",\"\n        /* Assign Location Data */\n        let latlon = splitStr(str, seperator).slice(-3);\n        lat = latlon[1];\n        lon = latlon[0].split('\\n',)[1];\n    } else { // Prevent error message and sends the CoT to TAK Jail @ 0,0\n        lat = \"0.0\";\n        lon = \"0.0\";\n    }\n} else {};\n\n//Regex variables to parse CalTopo App Track label for unique teams / colors\nconst regexSubject = /subject\\d+/g; /*If the SMS Locator Label contains \"subject\" in the label\n                                    To get the phone included in the contat information,\n                                    type \"subject [10-digit phone number used to send \n                                    SMS\"*/\nconst regexDeputy = /s\\d\\d\\d/g; //Sworn personnel have an \"S\" in front of their badge number\nconst regexPhoneNumber = /\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d/g; //10-digit phone number with no separators in CalTopo Label\nconst regexSubSkiNumber = /\\d+/g;\nconst regexSarMember = /sar\\d+/g;\n\n\n/* UID and Callsign */\nmsg.payload.uid = msg.payload.name[0].toLowerCase();\n/* Check Lookup Table, use UID if not found */\n    var uid = msg.payload.uid;\n    var callsign = uid;\n/*if (uid in callidgnd) {\n    callsign = callidgnd[msg.payload.uid];\n} else {}*/\n    //Set Default PLI Team name / color and Role\n    var groupName = \"White\";\n    var role = \"Team Member\";\n\n    //Parse CalTopo Label / uid for 10-digit phone number if available.\n    var foundPhoneNumber = \"\";\nif (uid.match(regexPhoneNumber) != null){\n        foundPhoneNumber = uid.match(regexPhoneNumber)\n        var phone = foundPhoneNumber[0];\n} else {\n        phone = \"\";\n    }\nvar uidbase = \"\";\nvar uidnumber = \"\";\n// Differentiate between SMS Locator Roles based on label created in CalTopo\nif (uid.match(regexSubject) != null) {\n    groupName = \"Magenta\";\n    role = \"Team Member\";\n    uidnumber = uid.match(regexSubSkiNumber);\n    uid = \"SAR-SUBJECT-\"+ uidnumber[0];\n} else if (uid.match(regexDeputy) != null) {\n    groupName = \"White\";\n    uidnumber = uid.match(regexDeputy);\n    uid = \"AZ-CCSO-PATROL-\"+uidnumber[0].toUpperCase();\n    //role = \"Forward Observer\";\n} else if (uid.match(regexSarMember) != null) {\n    groupName = \"Yellow\";\n    role = \"Team Member\";\n    uidnumber = uid.match(regexSarMember);\n    uid = \"cAZ-CCSO-SAR-\"+uidnumber[0].replace('sar','');\n} else {};\n\n    let newpayload = {\n        \"event\": {\n            \"_attributes\": {\n                \"version\": \"2.0\",\n                \"uid\": uid,\n                \"type\": \"a-f-G-U-C\",\n                \"how\": \"m-g\",\n                \"time\": new Date(Date.now()).toISOString(),\n                \"start\": new Date(Date.now()).toISOString(),\n                \"stale\": stale,\n            },\n            \"point\": {\n                \"_attributes\": {\n                    \"lat\": lat,\n                    \"lon\": lon,\n                    \"hae\": \"9999999.0\",\n                    \"ce\": \"9999999\",\n                    \"le\": \"9999999\",\n                }\n            },\n            \"detail\": {\n                \"__group\": {\n                    \"_attributes\": {\n                        \"name\": groupName,\n                        \"role\": role,\n                    }\n                },\n                \"precisionlocation\": {\n                    \"_attributes\": {\n                        \"geopointsrc\": \"GPS\",\n                        \"altsrc\": \"GPS\",\n                    }\n                },\n                \"track\": {\n                    \"_attributes\": {\n                        \"course\": \"0.00000\",\n                        \"speed\": \"0.00000\",\n                    }\n                },\n                \"contact\": {\n                    \"_attributes\": {\n                        \"endpoint\": \"*:-1:stcp\",\n                        \"callsign\": uid,\n                        \"phone\": phone,\n                    }\n                },\n                \"uid\": {\n                    \"_attributes\": {\n                        \"Droid\": uid,\n                    }\n                }\n            },\n        }\n    }\nmsg.payload = newpayload;\n/*node.warn(newpayload.event.detail.contact._attributes.callsign);*/\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 960,
+        "y": 390,
+        "wires": [
+            []
+        ]
+    }
+    ]
+}
