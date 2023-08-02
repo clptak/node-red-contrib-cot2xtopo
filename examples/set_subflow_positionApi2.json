@@ -1,0 +1,63 @@
+[
+    {
+        "id": "d78b187e91d3ebf6",
+        "type": "change",
+        "z": "0b36e4031c62503a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "positionApi2",
+                "pt": "flow",
+                "to": "positionApi",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 680,
+        "y": 1230,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ec9b2a970b7b1f80",
+        "type": "inject",
+        "z": "0b36e4031c62503a",
+        "g": "c4b086097bb752f1",
+        "name": "positionApi",
+        "props": [
+            {
+                "p": "positionApi",
+                "v": "tak_ccsosar_net_sarvol",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            },
+            {
+                "p": "payload.detail",
+                "v": "[{\"contact\":[{\"$\":{\"callsign\":\"Blank\"}}],\"remarks\":[\"\"],\"status\":[\"\"]}]",
+                "vt": "json"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"event\":{\"$\":{\"version\":\"2.0\",\"type\":\"\",\"uid\":null,\"how\":\"\",\"time\":\"\",\"start\":\"\",\"stale\":\"\"},\"point\":[{\"$\":{\"lat\":\"0.0\",\"lon\":\"0.0\",\"ce\":\"9999999.0\",\"le\":\"9999999.0\",\"hae\":\"9999999.0\"}}],\"detail\":[{\"contact\":[{\"$\":{\"callsign\":\"Blank\"}}],\"remarks\":[\"\"],\"status\":[\"\"]}]}}",
+        "payloadType": "json",
+        "x": 480,
+        "y": 1230,
+        "wires": [
+            [
+                "d78b187e91d3ebf6"
+            ]
+        ]
+    }
+]

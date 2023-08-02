@@ -1,0 +1,85 @@
+[
+    {
+        "id": "342c264d94caf357",
+        "type": "change",
+        "z": "0b36e4031c62503a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "tak2CalControl",
+                "pt": "global",
+                "to": "caltopoControl",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 370,
+        "y": 510,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5c6a2acae7ff89cc",
+        "type": "inject",
+        "z": "0b36e4031c62503a",
+        "name": "Start",
+        "props": [
+            {
+                "p": "caltopoControl",
+                "v": "true",
+                "vt": "bool"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 140,
+        "y": 480,
+        "wires": [
+            [
+                "342c264d94caf357"
+            ]
+        ]
+    },
+    {
+        "id": "f334567992cce00b",
+        "type": "inject",
+        "z": "0b36e4031c62503a",
+        "name": "Stop",
+        "props": [
+            {
+                "p": "caltopoControl",
+                "v": "false",
+                "vt": "bool"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 140,
+        "y": 540,
+        "wires": [
+            [
+                "342c264d94caf357"
+            ]
+        ]
+    }
+]

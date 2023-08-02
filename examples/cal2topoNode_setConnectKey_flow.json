@@ -1,0 +1,62 @@
+[
+    {
+        "id": "ad75c8fbcccf2fd2",
+        "type": "inject",
+        "z": "0b36e4031c62503a",
+        "name": "positionApi",
+        "props": [
+            {
+                "p": "positionApi",
+                "v": "",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            },
+            {
+                "p": "payload.detail",
+                "v": "[{\"contact\":[{\"$\":{\"callsign\":\"Blank\"}}],\"remarks\":[\"\"],\"status\":[\"\"]}]",
+                "vt": "json"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"event\":{\"$\":{\"version\":\"2.0\",\"type\":\"\",\"uid\":null,\"how\":\"\",\"time\":\"\",\"start\":\"\",\"stale\":\"\"},\"point\":[{\"$\":{\"lat\":\"0.0\",\"lon\":\"0.0\",\"ce\":\"9999999.0\",\"le\":\"9999999.0\",\"hae\":\"9999999.0\"}}],\"detail\":[{\"contact\":[{\"$\":{\"callsign\":\"Blank\"}}],\"remarks\":[\"\"],\"status\":[\"\"]}]}}",
+        "payloadType": "json",
+        "x": 150,
+        "y": 630,
+        "wires": [
+            [
+                "e8231f0e96f7420c"
+            ]
+        ]
+    },
+    {
+        "id": "e8231f0e96f7420c",
+        "type": "change",
+        "z": "0b36e4031c62503a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "positionApi",
+                "pt": "global",
+                "to": "positionApi",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 350,
+        "y": 630,
+        "wires": [
+            []
+        ]
+    }
+]
