@@ -45,6 +45,7 @@
         "https request status"
     ],
     "icon": "node-red/white-globe.svg",
+    "html": "cot2xtopo.html",
     "flow": [
         {
             "id": "c7e20961b319ace7",
