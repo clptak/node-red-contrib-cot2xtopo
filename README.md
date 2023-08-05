@@ -29,14 +29,18 @@ If using an SMS Locator in CalTopo and if you provide a callsign titled subject[
 
 ## REQUIRED NODES
 1. **INJECT:**  The msg.payload should be set to the CalTopo Map ID, which would be the last 5 characters of your CalTopo URL.  For example, if your map url is https://sartopo.com/m/ABC12, the map id would be `ABC12`.
-2. **[node-red-contrib-tak](https://node-red-contrib-tak.readthedocs.io/en/latest/):**  This node is required to pass the CoT message from this subflow to a TAK Server or EUDs on a network. 
+2. **node-red-contrib-tak:**  This node is required to pass the CoT message from this subflow to a TAK Server or EUDs on a network. 
 3. **TCP OUT:** 
    - **TAK Server:** If using TLS, check on the SSL / TLS option and create or edit your TLS Configuration, as needed.
    - **UDP:** This would need to be configured to your vpn settings and requires your Node Red instance to be on the same vpn to multicast to TAK end-user-devices.
 
+For more information on how to set up the network and [node-red-contrib-tak](https://node-red-contrib-tak.readthedocs.io/en/latest/) nodes, see https://node-red-contrib-tak.readthedocs.io/en/latest/
+
+For more information on configuring your [CalTopo](https://caltopo.com) team account, visit their [support](https://training.caltopo.com/all_users/team-accounts) page 
+
 ## INSTALLATION:
-1. Import subflow file to Node-RED
-2. Install using `npm`:  `npm install node-red-contrib-cot2xtopo`
+1. Import subflow json files in the `./examples` subfolder into to Node-RED
+2. Install using `npm`:  `npm i node-red-contrib-cot2xtopo`
 
 ## License & Copyright
 
