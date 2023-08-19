@@ -42,6 +42,8 @@ For more information on configuring your [CalTopo](https://caltopo.com) team acc
 1. Import subflow json files in the `./examples` subfolder into to Node-RED
 2. Install using `npm`:  `npm i node-red-contrib-cot2xtopo`
 
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/F8wrYstBHy)
+
 ## License & Copyright
 
 Copyright 2023 CLP Development, LLC
