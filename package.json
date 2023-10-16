@@ -29,8 +29,8 @@
   "homepage": "https://github.com/clptak/node-red-contrib-cot2xtopo/tree/main#readme",
   "node-red": {
       "nodes": {
-          "cot2xtopo-node": "cot2xtopo.js",
-          "xtopo2cot-node": "xtopo2cot.js"
+          "cot2xtopo": "cot2xtopo.js",
+          "xtopo2cot": "xtopo2cot.js"
     }
   }
 }
