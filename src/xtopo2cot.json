@@ -183,7 +183,7 @@
     ],
     "meta": {
         "module": "node-red-contrib-cot2xtopo",
-        "version": "2.0.3",
+        "version": "2.0.4",
         "author": "Paul Clifton <paulclifton@clptak.com>",
         "desc": "Takes data from Caltopo JSON endpoint and converts \"_Tracks\" to PLI CoT for TAK",
         "keywords": "cot tak topo",
@@ -234,14 +234,7 @@
             "insecureHTTPParser": false,
             "authType": "",
             "senderr": false,
-            "headers": [
-                {
-                    "keyType": "other",
-                    "keyValue": "cookie",
-                    "valueType": "other",
-                    "valueValue": "_pk_id.7.238c=48514d936604c7e5.1704730651.; _pk_ses.7.238c=1; _ssid=1HFUD4S91092; JSESSIONID=6FC300A4381EC8EDA01A9BB3D10E8C64"
-                }
-            ],
+            "headers": [],
             "x": 500,
             "y": 60,
             "wires": [
