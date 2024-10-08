@@ -1,278 +1,632 @@
 {
-    "id": "d0e5b19e9da84916",
+    "id": "6486a4a1329b9fe9",
     "type": "subflow",
     "name": "xtopo2cot",
-    "info": "Parsing network kml from CalTopo to Cursor on Target for PLI",
-     "category": "parser",
-     "in": [
+    "info": "This node downloads a json file from a CalTopo map endpoint  and parses out Live Tracking elements and creates a TAK cursor-on-target PLI message.\n\n### PROPERTIES:\n1. CalTopo Map ID:\n: env.caltopo_id (string) : CalTopo Map ID\n\n### INPUT:\n1. CalTopo Map ID:\n: msg.caltopo_id (string) : CalTopo Map ID\n\n2. Callsign Look Up:\n: msg.callsignLookup (json) : JSON file for Callsign to give particular callsigns unique Teams, roles, etc. This can be pasted into the Environmental variable for this node.\n\n**NOTE:** This node seeks the `callsignLookup` json information in the following priority (descending order):\n 1. `msg.callsignLookup`\n 2. `flow.callsignLookup`\n 3. `global.callsignLookup`\n 4. `env.callsignLookup`\n\n#### Example JSON file for Callsign callsignLookup\n[\n        {\n        \"groupName\": \"Magenta\",\n        \"uidPrefix\": \"SAR-SUBJECT \",\n        \"uidnumber\": \"/subject(\\\\d+)/g\",\n        \"role\": \"Team Member\",\n        \"text\": \"subject\"\n    },\n    {\n        \"groupName\": \"Yellow\",\n        \"uidPrefix\": \"SAR-MEMBER\",\n        \"uidnumber\": \"/SAR-(\\\\d\\\\d\\\\d)/g\",\n        \"role\": \"Team Member\",\n        \"text\": \"S\"\n    }\n]\n3. Add Filters\n: msg.addFilter (boolean) : Use additional Filters?\n\n4. Additional Filters List:\n:msg.addFilterList (json) : An array of filter names to screen PLI labels\n\n#### Example JSON Object for `addFilterList`:\n[\"Track_name\",\"Another_TrackName\"]\n\n### OUTPUT:\n1. CoT PLI Message\n: msg.payload (json) : Message to feed into `node-red-contrib-tak` and a configured `tcp out` nodes.",
+    "category": "parser",
+    "in": [
         {
-            "x": 110,
-            "y": 270,
+            "x": 70,
+            "y": 60,
             "wires": [
                 {
-                    "id": "060337234238faef"
+                    "id": "25371b07b78d215b"
                 }
             ]
         }
     ],
     "out": [
         {
-            "x": 1190,
-            "y": 390,
+            "x": 1090,
+            "y": 300,
             "wires": [
                 {
-                    "id": "3d80a28ba6cdd03f",
-                    "port": 0                    }
-                ]
+                    "id": "305356f5c2f16b18",
+                    "port": 0
+                }
+            ]
+        },
+        {
+            "x": 1130,
+            "y": 60,
+            "wires": [
+                {
+                    "id": "396e6fe69d53b634",
+                    "port": 1
+                },
+                {
+                    "id": "fd383dbb85a903cd",
+                    "port": 1
+                }
+            ]
         }
     ],
-    "env": [],
+    "env": [
+        {
+            "name": "caltopo_id",
+            "type": "str",
+            "value": "",
+            "ui": {
+                "icon": "font-awesome/fa-map-o",
+                "label": {
+                    "en-US": "Map ID"
+                }
+            }
+        },
+        {
+            "name": "callsignLookup",
+            "type": "json",
+            "value": "[]",
+            "ui": {
+                "icon": "font-awesome/fa-search",
+                "label": {
+                    "en-US": "Callsign Search"
+                }
+            }
+        },
+        {
+            "name": "takGroupName",
+            "type": "str",
+            "value": "White",
+            "ui": {
+                "icon": "font-awesome/fa-group",
+                "label": {
+                    "en-US": "Default Color"
+                },
+                "type": "select",
+                "opts": {
+                    "opts": [
+                        {
+                            "l": {
+                                "en-US": "White"
+                            },
+                            "v": "White"
+                        },
+                        {
+                            "l": {
+                                "en-US": "Green"
+                            },
+                            "v": "Green"
+                        },
+                        {
+                            "l": {
+                                "en-US": "Magenta"
+                            },
+                            "v": "Magenta"
+                        },
+                        {
+                            "l": {
+                                "en-US": "Red"
+                            },
+                            "v": "Red"
+                        },
+                        {
+                            "l": {
+                                "en-US": "Maroon"
+                            },
+                            "v": "Maroon"
+                        },
+                        {
+                            "l": {
+                                "en-US": "Purple"
+                            },
+                            "v": "Purple"
+                        },
+                        {
+                            "l": {
+                                "en-US": "Dark Green"
+                            },
+                            "v": "Dark Green"
+                        },
+                        {
+                            "l": {
+                                "en-US": "Teal"
+                            },
+                            "v": "Teal"
+                        },
+                        {
+                            "l": {
+                                "en-US": "Brown"
+                            },
+                            "v": "Brown"
+                        },
+                        {
+                            "l": {
+                                "en-US": "Orange"
+                            },
+                            "v": "Orange"
+                        },
+                        {
+                            "l": {
+                                "en-US": "Yellow"
+                            },
+                            "v": "Yellow"
+                        },
+                        {
+                            "l": {
+                                "en-US": "Blue"
+                            },
+                            "v": "Blue"
+                        },
+                        {
+                            "l": {
+                                "en-US": "Dark Blue"
+                            },
+                            "v": "Dark Blue"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "addFilterList",
+            "type": "json",
+            "value": "[\"Another\"]",
+            "ui": {
+                "icon": "font-awesome/fa-list-ul",
+                "label": {
+                    "en-US": "Filter List"
+                }
+            }
+        },
+        {
+            "name": "addFilter",
+            "type": "bool",
+            "value": "false",
+            "ui": {
+                "icon": "font-awesome/fa-filter",
+                "label": {
+                    "en-US": "Filter"
+                }
+            }
+        }
+    ],
     "meta": {
-    "module": "node-red-contrib-cot2xtopo",
-        "version": "1.0.6",
-        "author": "Paul Clifton <paul.clifton@clptak.com>",
-        "desc": "Parsing network kml from CalTopo to Cursor on Target for PLI",
-        "keywords": "kml cot network-kml caltopo tak atak itak wintak sartopo nodered",
+        "module": "node-red-contrib-cot2xtopo",
+        "version": "2.0.3",
+        "author": "Paul Clifton <paulclifton@clptak.com>",
+        "desc": "Takes data from Caltopo JSON endpoint and converts \"_Tracks\" to PLI CoT for TAK",
+        "keywords": "cot tak topo",
         "license": "Apache-2.0"
     },
-    "color": "#E9967A",
+    "color": "#3FADB5",
     "inputLabels": [
-        "CalTopo Map ID"
+        "caltopo_id"
     ],
     "outputLabels": [
-        "CoT Message"
+        "jsonified CoT",
+        "Debug"
     ],
-    "icon": "font-awesome/fa-map-marker",
-    "flow" : [
-    {
-        "id": "060337234238faef",
-        "type": "http request",
-        "z": "d0e5b19e9da84916",
-        "name": "Get SARTopo KML",
-        "method": "GET",
-        "ret": "txt",
-        "paytoqs": "ignore",
-        "url": "https://sartopo.com/m/{{{payload}}}?format=kml",
-        "tls": "",
-        "persist": false,
-        "proxy": "",
-        "insecureHTTPParser": false,
-        "authType": "",
-        "senderr": false,
-        "headers": [],
-        "x": 270,
-        "y": 270,
-        "wires": [
-            [
-                "281c89443301900b"
+    "icon": "font-awesome/fa-map",
+    "flow": [
+        {
+            "id": "25371b07b78d215b",
+            "type": "function",
+            "z": "6486a4a1329b9fe9",
+            "name": "Set up URL and Method",
+            "func": "msg.url = \"https://caltopo.com//api/v1/map/\"+msg.caltopo_id + \"/since/-500\"\n\nmsg.method = \"GET\";\nreturn msg;",
+            "outputs": 1,
+            "timeout": 0,
+            "noerr": 0,
+            "initialize": "",
+            "finalize": "",
+            "libs": [],
+            "x": 260,
+            "y": 60,
+            "wires": [
+                [
+                    "3f468326f6d54f41"
+                ]
             ]
-        ]
-    },
-    {
-        "id": "281c89443301900b",
-        "type": "xml",
-        "z": "d0e5b19e9da84916",
-        "name": "",
-        "property": "payload",
-        "attr": "",
-        "chr": "",
-        "x": 440,
-        "y": 270,
-        "wires": [
-            [
-                "6dd8abb098f9fde3"
-            ]
-        ]
-    },
-    {
-        "id": "6dd8abb098f9fde3",
-        "type": "function",
-        "z": "d0e5b19e9da84916",
-        "name": "Split Array (Multiple Types per RX)",
-        "func": "for (var i = 0; i < msg.payload.kml.Document[0].Folder.length; i++) {\n    var newMsg = {};\n    newMsg.payload = msg.payload.kml.Document[0].Folder[i];\n    node.send(newMsg);\n}\nreturn null;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 670,
-        "y": 270,
-        "wires": [
-            [
-                "40abb2adbce323d8"
-            ]
-        ]
-    },
-    {
-        "id": "40abb2adbce323d8",
-        "type": "switch",
-        "z": "d0e5b19e9da84916",
-        "name": "TAK PLI Filter",
-        "property": "payload.name",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "LineStrings",
-                "vt": "str"
-            },
-            {
-                "t": "else"
-            }
-        ],
-        "checkall": "false",
-        "repair": false,
-        "outputs": 2,
-        "x": 380,
-        "y": 330,
-        "wires": [
-            [
-                "b26ade62742d5cee"
+        },
+        {
+            "id": "3f468326f6d54f41",
+            "type": "http request",
+            "z": "6486a4a1329b9fe9",
+            "name": "Get CalTopo Map",
+            "method": "use",
+            "ret": "txt",
+            "paytoqs": "ignore",
+            "url": "",
+            "tls": "",
+            "persist": false,
+            "proxy": "",
+            "insecureHTTPParser": false,
+            "authType": "",
+            "senderr": false,
+            "headers": [
+                {
+                    "keyType": "other",
+                    "keyValue": "cookie",
+                    "valueType": "other",
+                    "valueValue": "_pk_id.7.238c=48514d936604c7e5.1704730651.; _pk_ses.7.238c=1; _ssid=1HFUD4S91092; JSESSIONID=6FC300A4381EC8EDA01A9BB3D10E8C64"
+                }
             ],
-            []
-        ]
-    },
-    {
-        "id": "b26ade62742d5cee",
-        "type": "change",
-        "z": "d0e5b19e9da84916",
-        "name": "Clean Up",
-        "rules": [
-            {
-                "t": "delete",
-                "p": "topic",
-                "pt": "msg"
-            },
-            {
-                "t": "delete",
-                "p": "statusCode",
-                "pt": "msg"
-            },
-            {
-                "t": "delete",
-                "p": "headers",
-                "pt": "msg"
-            },
-            {
-                "t": "delete",
-                "p": "responseUrl",
-                "pt": "msg"
-            },
-            {
-                "t": "delete",
-                "p": "redirectList",
-                "pt": "msg"
-            },
-            {
-                "t": "delete",
-                "p": "responseCookies",
-                "pt": "msg"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 570,
-        "y": 330,
-        "wires": [
-            [
-                "9168125f016536a5"
+            "x": 500,
+            "y": 60,
+            "wires": [
+                [
+                    "396e6fe69d53b634"
+                ]
             ]
-        ]
-    },
-    {
-        "id": "863621bd9f1d112a",
-        "type": "function",
-        "z": "d0e5b19e9da84916",
-        "name": "TAK PLI - Split Placemark Array",
-        "func": "for (var i = 0; i < msg.payload.Placemark.length; i++) {\n    var newMsg = {};\n    newMsg.payload = msg.payload.Placemark[i];\n    node.send(newMsg);\n}\nreturn null;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 550,
-        "y": 390,
-        "wires": [
-            [
-                "5a646d6b831ded6f"
+        },
+        {
+            "id": "396e6fe69d53b634",
+            "type": "switch",
+            "z": "6486a4a1329b9fe9",
+            "name": "http status",
+            "property": "statusCode",
+            "propertyType": "msg",
+            "rules": [
+                {
+                    "t": "eq",
+                    "v": "200",
+                    "vt": "str"
+                },
+                {
+                    "t": "neq",
+                    "v": "200",
+                    "vt": "str"
+                }
+            ],
+            "checkall": "true",
+            "repair": false,
+            "outputs": 2,
+            "x": 690,
+            "y": 60,
+            "wires": [
+                [
+                    "71b1a434ab0b1045"
+                ],
+                []
             ]
-        ]
-    },
-    {
-        "id": "9168125f016536a5",
-        "type": "switch",
-        "z": "d0e5b19e9da84916",
-        "name": "",
-        "property": "payload.Placemark[0].name[0]",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "cont",
-                "v": "Do_NOT_DELETE",
-                "vt": "str"
-            },
-            {
-                "t": "else"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 2,
-        "x": 760,
-        "y": 330,
-        "wires": [
-            [],
-            [
-                "863621bd9f1d112a"
+        },
+        {
+            "id": "71b1a434ab0b1045",
+            "type": "json",
+            "z": "6486a4a1329b9fe9",
+            "name": "str to obj",
+            "property": "payload",
+            "action": "",
+            "pretty": true,
+            "x": 210,
+            "y": 120,
+            "wires": [
+                [
+                    "b7796d95374bdf0e"
+                ]
             ]
-        ]
-    },
-    {
-        "id": "5a646d6b831ded6f",
-        "type": "switch",
-        "z": "d0e5b19e9da84916",
-        "name": "",
-        "property": "payload.MultiGeometry",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "nnull"
-            },
-            {
-                "t": "else"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 2,
-        "x": 760,
-        "y": 390,
-        "wires": [
-            [],
-            [
-                "3d80a28ba6cdd03f"
+        },
+        {
+            "id": "b7796d95374bdf0e",
+            "type": "function",
+            "z": "6486a4a1329b9fe9",
+            "name": "Parse JSON Folder",
+            "func": "//var payload = msg.payload;\nvar result = msg.payload.result;\nvar ids = result.ids;\nvar features = result.state.features;\nvar pliList = []\n\n// Define the keys to check in the JSON object\nvar keysToCheck = [\"AppTrack\", \"LiveTrack\", \"FieldTrack\"];\n\n// Iterate over each key and check if the corresponding array is not empty\nkeysToCheck.forEach(function (key) {\n    if (ids[key] && ids[key].length > 0) {\n        // Append the contents of the array to pliList\n        pliList = pliList.concat(ids[key]);\n    }\n});\n\n// Return the newly created array as a message payload\n//return { payload: pliList };\n\nvar matchingFeatures = [];\n\n// Check each id in pliList against the features array\npliList.forEach(function (pliId) {\n    features.forEach(function (feature) {\n        if (feature.id === pliId) {\n            matchingFeatures.push(feature);\n        }\n    });\n});\n\n// Return array of matching features\nreturn { payload: matchingFeatures };",
+            "outputs": 1,
+            "timeout": 0,
+            "noerr": 0,
+            "initialize": "",
+            "finalize": "",
+            "libs": [],
+            "x": 400,
+            "y": 120,
+            "wires": [
+                [
+                    "19ed3a9dce7e3464"
+                ]
             ]
-        ]
-    },
-    {
-        "id": "3d80a28ba6cdd03f",
-        "type": "function",
-        "z": "d0e5b19e9da84916",
-        "name": "JSON to PLI CoT",
-        "func": "/* Stale is Date.now() + miliseconds. \n Ruberic: 1000 Miliseconds in 1 Second\n Example: 5 Minutes, in Miliseconds, is 300000\n   (5 x 60 * 1000 )\n*/\nconst cinco = 1 * 60 * 1000;\nconst stale = new Date(Date.now() + 2 * cinco).toISOString();\n\n/*const randuuid = uuid.v4(); - USED FOR OBJECTS CREATED BY A UID*/\n\n//LOOKUP TABLES\nconst callidgnd = {\n    //'1' : 'Unit ID 1',\n    //'1337' : 'Unit ID 1337',\n    'do_not_delete' : 'NO CALLSIGN SET',\n    };\n\n/* Split Coordinates and choose latest */\nfunction splitStr(str, separator) {\n\n    // Function to split string\n    let newstring = str.split(separator);\n    return newstring;\n}\nvar lat = \"\";\nvar lon = \"\";\nif (msg.payload.LineString != null) {\n    if (msg.payload.LineString[0].coordinates[0] != null){\n        let str = msg.payload.LineString[0].coordinates[0];\n        let seperator = \",\"\n        /* Assign Location Data */\n        let latlon = splitStr(str,seperator).slice(-3);\n        lat = latlon[1];\n        lon = latlon[0].split('\\n',)[1];\n    } else if (msg.payload.Point[0].coordinates[0] != null) {\n        let str = msg.payload.Point[0].coordinates[0];\n        let seperator = \",\"\n        /* Assign Location Data */\n        let latlon = splitStr(str, seperator).slice(-3);\n        lat = latlon[1];\n        lon = latlon[0].split('\\n',)[1];\n    } else { // Prevent error message and sends the CoT to TAK Jail @ 0,0\n        lat = \"0.0\";\n        lon = \"0.0\";\n    }\n} else {};\n\n//Regex variables to parse CalTopo App Track label for unique teams / colors\nconst regexSubject = /subject\\d+/g; /*If the SMS Locator Label contains \"subject\" in the label\n                                    To get the phone included in the contat information,\n                                    type \"subject [10-digit phone number used to send \n                                    SMS\"*/\nconst regexDeputy = /s\\d\\d\\d/g; //Sworn personnel have an \"S\" in front of their badge number\nconst regexPhoneNumber = /\\d\\d\\d\\d\\d\\d\\d\\d\\d\\d/g; //10-digit phone number with no separators in CalTopo Label\nconst regexSubSkiNumber = /\\d+/g;\nconst regexSarMember = /sar\\d+/g;\n\n\n/* UID and Callsign */\nmsg.payload.uid = msg.payload.name[0].toLowerCase();\n/* Check Lookup Table, use UID if not found */\n    var uid = msg.payload.uid;\n    var callsign = uid;\n/*if (uid in callidgnd) {\n    callsign = callidgnd[msg.payload.uid];\n} else {}*/\n    //Set Default PLI Team name / color and Role\n    var groupName = \"White\";\n    var role = \"Team Member\";\n\n    //Parse CalTopo Label / uid for 10-digit phone number if available.\n    var foundPhoneNumber = \"\";\nif (uid.match(regexPhoneNumber) != null){\n        foundPhoneNumber = uid.match(regexPhoneNumber)\n        var phone = foundPhoneNumber[0];\n} else {\n        phone = \"\";\n    }\nvar uidbase = \"\";\nvar uidnumber = \"\";\n// Differentiate between SMS Locator Roles based on label created in CalTopo\nif (uid.match(regexSubject) != null) {\n    groupName = \"Magenta\";\n    role = \"Team Member\";\n    uidnumber = uid.match(regexSubSkiNumber);\n    uid = \"SAR-SUBJECT-\"+ uidnumber[0];\n} else if (uid.match(regexDeputy) != null) {\n    groupName = \"White\";\n    uidnumber = uid.match(regexDeputy);\n    uid = \"AZ-CCSO-PATROL-\"+uidnumber[0].toUpperCase();\n    //role = \"Forward Observer\";\n} else if (uid.match(regexSarMember) != null) {\n    groupName = \"Yellow\";\n    role = \"Team Member\";\n    uidnumber = uid.match(regexSarMember);\n    uid = \"cAZ-CCSO-SAR-\"+uidnumber[0].replace('sar','');\n} else {};\n\n    let newpayload = {\n        \"event\": {\n            \"_attributes\": {\n                \"version\": \"2.0\",\n                \"uid\": uid,\n                \"type\": \"a-f-G-U-C\",\n                \"how\": \"m-g\",\n                \"time\": new Date(Date.now()).toISOString(),\n                \"start\": new Date(Date.now()).toISOString(),\n                \"stale\": stale,\n            },\n            \"point\": {\n                \"_attributes\": {\n                    \"lat\": lat,\n                    \"lon\": lon,\n                    \"hae\": \"9999999.0\",\n                    \"ce\": \"9999999\",\n                    \"le\": \"9999999\",\n                }\n            },\n            \"detail\": {\n                \"__group\": {\n                    \"_attributes\": {\n                        \"name\": groupName,\n                        \"role\": role,\n                    }\n                },\n                \"precisionlocation\": {\n                    \"_attributes\": {\n                        \"geopointsrc\": \"GPS\",\n                        \"altsrc\": \"GPS\",\n                    }\n                },\n                \"track\": {\n                    \"_attributes\": {\n                        \"course\": \"0.00000\",\n                        \"speed\": \"0.00000\",\n                    }\n                },\n                \"contact\": {\n                    \"_attributes\": {\n                        \"endpoint\": \"*:-1:stcp\",\n                        \"callsign\": uid,\n                        \"phone\": phone,\n                    }\n                },\n                \"uid\": {\n                    \"_attributes\": {\n                        \"Droid\": uid,\n                    }\n                }\n            },\n        }\n    }\nmsg.payload = newpayload;\n/*node.warn(newpayload.event.detail.contact._attributes.callsign);*/\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 960,
-        "y": 390,
-        "wires": [
-            []
-        ]
-    }
+        },
+        {
+            "id": "19ed3a9dce7e3464",
+            "type": "function",
+            "z": "6486a4a1329b9fe9",
+            "name": "Seperate PLI",
+            "func": "try {\nfor (var i = 0; i < msg.payload.length; i++) {\n    var newMsg = {};\n    newMsg.payload = msg.payload[i];\n    node.send(newMsg);\n    }\n} catch (error) {\n    node.error(\"Caught an error: \" + error);\n    msg.payload = error.toString();\n    return msg;\n}\nreturn null;",
+            "outputs": 1,
+            "timeout": "",
+            "noerr": 0,
+            "initialize": "",
+            "finalize": "",
+            "libs": [],
+            "x": 590,
+            "y": 120,
+            "wires": [
+                [
+                    "fd383dbb85a903cd"
+                ]
+            ]
+        },
+        {
+            "id": "fd383dbb85a903cd",
+            "type": "switch",
+            "z": "6486a4a1329b9fe9",
+            "name": "FILTER OUT CALLSIGNS",
+            "property": "payload.properties.title",
+            "propertyType": "msg",
+            "rules": [
+                {
+                    "t": "else"
+                },
+                {
+                    "t": "cont",
+                    "v": "takCallsignFilter",
+                    "vt": "env"
+                }
+            ],
+            "checkall": "true",
+            "repair": false,
+            "outputs": 2,
+            "x": 800,
+            "y": 120,
+            "wires": [
+                [
+                    "7ca31f3399cdc311"
+                ],
+                []
+            ]
+        },
+        {
+            "id": "7ca31f3399cdc311",
+            "type": "function",
+            "z": "6486a4a1329b9fe9",
+            "name": "Check if TAK Callsign is Connected to Server",
+            "func": "// Access the global context\nvar takClients = global.get(\"takClientsConnected\") || [];\nvar payloadName = msg.payload.title;\n\n// Function to check if the payloadName exists in the takClient array\nfunction callsignExists(takClients, name) {\n    for (var i = 0; i < takClients.length; i++) {\n        if (takClients[i][1].callsign === name) {\n            return true; // Match found\n        }\n    }\n    return false; // No match found\n}\n\n// Check for existence of the payload name\nif (callsignExists(takClients, payloadName)) {\n    msg.takClient = true;\n    return msg; // No action taken\n} else {\n    msg.takClient = false;\n    return msg; //Pass the **payload as is**\n}",
+            "outputs": 1,
+            "timeout": 0,
+            "noerr": 0,
+            "initialize": "",
+            "finalize": "",
+            "libs": [],
+            "x": 380,
+            "y": 180,
+            "wires": [
+                [
+                    "e57a9da075788d7c"
+                ]
+            ]
+        },
+        {
+            "id": "e57a9da075788d7c",
+            "type": "switch",
+            "z": "6486a4a1329b9fe9",
+            "name": "TAK Client Connected True or False",
+            "property": "takClient",
+            "propertyType": "msg",
+            "rules": [
+                {
+                    "t": "false"
+                },
+                {
+                    "t": "true"
+                }
+            ],
+            "checkall": "true",
+            "repair": false,
+            "outputs": 2,
+            "x": 720,
+            "y": 180,
+            "wires": [
+                [
+                    "109dad133f2708d0"
+                ],
+                [
+                    "109dad133f2708d0"
+                ]
+            ]
+        },
+        {
+            "id": "bd1d7e5f7447dc40",
+            "type": "switch",
+            "z": "6486a4a1329b9fe9",
+            "d": true,
+            "name": "Check Additional Filters",
+            "property": "filteredClient",
+            "propertyType": "msg",
+            "rules": [
+                {
+                    "t": "false"
+                },
+                {
+                    "t": "true"
+                }
+            ],
+            "checkall": "true",
+            "repair": false,
+            "outputs": 2,
+            "x": 390,
+            "y": 240,
+            "wires": [
+                [],
+                [
+                    "109dad133f2708d0"
+                ]
+            ]
+        },
+        {
+            "id": "109dad133f2708d0",
+            "type": "change",
+            "z": "6486a4a1329b9fe9",
+            "name": "",
+            "rules": [
+                {
+                    "t": "set",
+                    "p": "appTrack",
+                    "pt": "msg",
+                    "to": "payload",
+                    "tot": "msg"
+                },
+                {
+                    "t": "delete",
+                    "p": "payload",
+                    "pt": "msg"
+                }
+            ],
+            "action": "",
+            "property": "",
+            "from": "",
+            "to": "",
+            "reg": false,
+            "x": 620,
+            "y": 240,
+            "wires": [
+                [
+                    "3edc3f3bfdbf6574"
+                ]
+            ]
+        },
+        {
+            "id": "3edc3f3bfdbf6574",
+            "type": "function",
+            "z": "6486a4a1329b9fe9",
+            "name": "CalTopo Live-Tracking Parse",
+            "func": "const payload = msg.appTrack;\nconst cinco = 1 * 60 * 1000;\nconst stale = new Date(Date.now() + 2 * cinco).toISOString();\n\n//Callsign Lookup Table from Env Variable - Priority (in descending order) Goes to msg.callsignLookup, flow.callsignLookup, global.callsignLookup, and then defaults to env.callsignLookup if other variables do not exist.\nlet callsignLookup = env.get(\"callsignLookup\");\nif (msg.callsignLookup !== null && msg.callsignLookup !== undefined && msg.callsignLookup !== \"\"){\n    callsignLookup = msg.callsignLookup;\n} else if (flow.get(\"callsignLookup\") !== null && flow.get(\"callsignLookup\") !== undefined && flow.get(\"callsignLookup\") !== \"\") {\n    callsignLookup = flow.get(\"callsignLookup\"); \n} else if (global.get(\"callsignLookup\") !== null && global.get(\"callsignLookup\") !== undefined && global.get(\"callsignLookup\")!== \"\"){\n    callsignLookup = global.get(\"callsignLookup\");\n} else if (env.get(\"callsignLookup\") !== null && env.get(\"callsignLookup\") !== undefined){\n    callsignLookup = env.get(\"callsignLookup\");\n} else {\n    callsignLookup = null;\n};\n\nvar lat = 0.0;\nvar lon = 0.0;\nvar altitude = 9999999.0\nif (payload.geometry != null) {\n    if (payload.geometry.coordinates[0] != null) {\n        lat = payload.geometry.coordinates[0][1]\n        lon = payload.geometry.coordinates[0][0]\n        altitude = payload.geometry.coordinates[0][2]\n\n    } else { // Prevent error message and sends the CoT to TAK Jail @ 0,0\n        lat = 0.0;\n        lon = 0.0;\n    }\n} else { };\n\n// Phone Number in \"Label\" field of Caltopo's \"SMS Locator\" Window must be 10 digits without any delimiters (due to Caltopo's limited space for the form's field entry)\nconst regexPhoneNumber = /\\d{10}/g; //10-digit phone number with no separators in CalTopo Label\n\n// UID and Callsign //\n\n/* Check Lookup Table, use UID if not found */\nvar uid = payload.id;\nvar callsign = payload.properties.title.toLowerCase();\n\n//Set Default PLI Team name / color and Role\nlet groupName = env.get(\"takGroupName\")\n//var groupName= \"Purple\"\nif (msg.takGroupName !== undefined && msg.takGroupName !== null && msg.takGroupName !== \"\") {\n    groupName = msg.takGroupName;\n} else if (flow.get(\"takGroupName\") !== null && flow.get(\"takGroupName\") !== undefined && flow.get(\"takGroupName\") !== \"\") {\n    groupName = flow.get(\"takGroupName\");\n} else if (global.get(\"takGroupName\") !== null && global.get(\"takGroupName\") !== undefined && global.get(\"takGroupName\") !== \"\") {\n    groupName = global.get(\"takGroupName\");\n} else if (env.get(\"takGroupName\") !== null && env.get(\"takGroupName\") !== undefined && env.get(\"takGroupName\") !== \"\"){\n    groupName = env.get(\"takGroupName\");\n} else {\n    groupName = \"White\";\n}\n//var groupName = \"Purple\"\nvar role = \"Team Member\";\n\n//Parse CalTopo Label / uid for 10-digit phone number if available.\nvar foundPhoneNumber = \"\";\nif (callsign.match(regexPhoneNumber) != null) {\n    foundPhoneNumber = callsign.match(regexPhoneNumber)\n    var phone = foundPhoneNumber[0];\n} else {\n    phone = \"\";\n}\nvar uidbase = \"\";\nvar uidnumber = \"\";\n\n// Differentiate between SMS Locator Roles based on label created in Caltopo\nif (callsignLookup !== undefined && callsignLookup !== null) {\n    for (var i = 0; i < callsignLookup.length; i++) {\n        if (callsign.toLowerCase().includes(callsignLookup[i].text)) {\n            groupName = callsignLookup[i].groupName;\n            \n            // Extract the pattern and flags from the regex string\n            var match = callsignLookup[i].uidnumber.match(/^\\/(.*?)\\/([gimuy]*)$/);\n            if (match) {\n                // match[1] is the pattern, match[2] are the flags\n                var regex = new RegExp(match[1], match[2]);\n            }\n            role = callsignLookup[i].role;\n            callsign = callsignLookup[i].uidPrefix + callsign.replace(callsignLookup[i].text,\"\");\n            if (callsign.match(/\\d{10}/g)){\n                var phoneMatch = callsign.match(regexPhoneNumber)[0];\n                msg.phoneMatch = phoneMatch;\n                callsign = callsign.replace(phoneMatch,\"\").trim()\n            }\n        }\n    }\n} else { };\n\nlet newpayload = {\n    \"uid\": uid,\n    \"how\": \"m-g\",\n    \"type\": \"a-f-G-U-C\",\n    \"lat\": lat,\n    \"lon\": lon,\n    \"altitude\": altitude,\n    \"callsign\": callsign.toUpperCase(),//callsign,\n    \"stale\": stale,\n    \"detail\": {\n        \"pli\": {\n            \"groupName\": groupName,\n            \"role\": role,\n            \"phone\": phone //10 digit with no demarcation\n        },\n        \"cot_type\": \"a-f-G-U-C\"\n    }\n}\nmsg.groupName = groupName\nmsg.payload = newpayload;\nreturn msg;",
+            "outputs": 1,
+            "timeout": "",
+            "noerr": 0,
+            "initialize": "",
+            "finalize": "",
+            "libs": [],
+            "x": 850,
+            "y": 240,
+            "wires": [
+                [
+                    "966908a2bc888197"
+                ]
+            ],
+            "inputLabels": [
+                "msg.payload from xml node"
+            ],
+            "outputLabels": [
+                "CoT Attributes (JSON)"
+            ],
+            "info": "# JSON 2 COT - PLI\n\n## JSON INPUT\n```json\nmsg.payload = {\n    \"lat\": string, //decimal degree\n    \"lon\": string, //decimal degree\n    \"altitude\": string, //9999999.0 if altitude unknown \n    \"uid\": string, //callsign\n    \"stale\": string, //ISO UTC\n    \"groupName\": string, // Color:  Blue, Yellow, Red, Orange, etc.\n    \"role\": string, //Team Member, Team Leader, HQ, RTO, etc.\n    \"phone\" string //10 digit with no demarcation\n}\n```\n"
+        },
+        {
+            "id": "966908a2bc888197",
+            "type": "function",
+            "z": "6486a4a1329b9fe9",
+            "name": "JSON to PLI CoT ",
+            "func": "var payload = msg.payload;\nvar uid = payload.uid;\nvar lat = payload.lat;\nvar lon = payload.lon;\nvar altitude = payload.altitude;\nconst callsign = payload.callsign;\n\nvar how = payload.how;\nvar type = payload.type;\nvar detail = payload.detail\nvar stale = \"\";\n\n\nif (payload.stale){\n    stale = payload.stale;\n} else {\n    const cinco = 1 * 60 * 1000;\n    stale = new Date(Date.now() + 2 * cinco).toISOString();\n};\n\nif (uid != null) {\n    if (lat != null) {\n        if (lon != null) {\n            let newpayload = {\n                \"event\": {\n                    \"_attributes\": {\n                        \"version\": \"2.0\",\n                        \"uid\": uid,\n                        \"type\": type,\n                        \"how\": how,\n                        \"time\": new Date(Date.now()).toISOString(),\n                        \"start\": new Date(Date.now()).toISOString(),\n                        \"stale\": stale,\n                    },\n                    \"point\": {\n                        \"_attributes\": {\n                            \"lat\": JSON.stringify(lat),\n                            \"lon\": JSON.stringify(lon),\n                            \"hae\": JSON.stringify(altitude),\n                            \"ce\": \"9999999.0\",\n                            \"le\": \"9999999.0\",\n                        }\n                    },\n                    \"detail\": {\n                    }\n                }\n            }\n            msg.payload = newpayload;\n            msg.callsign = callsign;\n            msg.cot_detail = detail\n            msg.topic = how;\n            msg.type = type;\n            /*node.warn(newpayload.event.detail.contact._attributes.callsign);*/\n            return msg;\n        } else {\n            msg.topic = \"unknown\"\n            return msg;\n        }\n    }\n} else {\n    msg.topic = \"incomplete\"\n    return msg;\n}\n\n/*const randuuid = uuid.v4(); - USED FOR OBJECTS CREATED BY A UID*/",
+            "outputs": 1,
+            "timeout": "",
+            "noerr": 0,
+            "initialize": "",
+            "finalize": "",
+            "libs": [],
+            "x": 430,
+            "y": 300,
+            "wires": [
+                [
+                    "65857ba716b88711"
+                ]
+            ],
+            "inputLabels": [
+                "msg.payload CoT Attributes"
+            ],
+            "outputLabels": [
+                "CoT (JSON-ified)"
+            ],
+            "info": "# JSON 2 COT - PLI\n\n## JSON INPUT\n```json\nmsg.payload = {\n    \"lat\": float,\n    \"lon\": float,\n    \"altitude\": float,\n    \"callsign\": string,\n    \"uid\": string,\n    \"stale\": time,\n    \"groupName\": string,\n    \"role\": string,\n    \"phone\" string //10 digit with no demarcation\n}\n```\n"
+        },
+        {
+            "id": "65857ba716b88711",
+            "type": "function",
+            "z": "6486a4a1329b9fe9",
+            "name": "cot_detail_PLI",
+            "func": "var detail = msg.cot_detail.pli;\nvar groupName = detail.groupName;\nvar role = detail.role;\nvar phone = detail.phone;\nconst cot_base = msg.payload;\nvar uid = msg.payload.event._attributes.uid;\nconst callsign = msg.callsign;\n\n\nlet detail_pli = {\"__group\": {\n    \"_attributes\": {\n        \"name\": groupName,\n            \"role\": role,\n        }\n    },\n    \"precisionlocation\": {\n        \"_attributes\": {\n            \"geopointsrc\": \"GPS\",\n                \"altsrc\": \"GPS\",\n        }\n    },\n    \"track\": {\n        \"_attributes\": {\n            \"course\": \"0.00000\",\n            \"speed\": \"0.00000\",\n        }\n    },\n    \"contact\": {\n        \"_attributes\": {\n            \"endpoint\": \"*:-1:stcp\",\n                \"callsign\": callsign,\n                \"phone\": phone,\n        }\n    },\n    \"uid\": {\n        \"_attributes\": {\n            \"Droid\": uid,\n        }\n    }\n}\ncot_base.event.detail = detail_pli;\nmsg.payload = cot_base;\n//msg.payload.detail = detail;\nreturn msg;",
+            "outputs": 1,
+            "timeout": "",
+            "noerr": 0,
+            "initialize": "",
+            "finalize": "",
+            "libs": [],
+            "x": 660,
+            "y": 300,
+            "wires": [
+                [
+                    "305356f5c2f16b18"
+                ]
+            ]
+        },
+        {
+            "id": "305356f5c2f16b18",
+            "type": "change",
+            "z": "6486a4a1329b9fe9",
+            "name": "Clean",
+            "rules": [
+                {
+                    "t": "delete",
+                    "p": "cot_detail",
+                    "pt": "msg"
+                },
+                {
+                    "t": "delete",
+                    "p": "appTrack",
+                    "pt": "msg"
+                },
+                {
+                    "t": "delete",
+                    "p": "topic",
+                    "pt": "msg"
+                },
+                {
+                    "t": "delete",
+                    "p": "type",
+                    "pt": "msg"
+                },
+                {
+                    "t": "delete",
+                    "p": "groupName",
+                    "pt": "msg"
+                },
+                {
+                    "t": "delete",
+                    "p": "phoneMatch",
+                    "pt": "msg"
+                },
+                {
+                    "t": "delete",
+                    "p": "takClient",
+                    "pt": "msg"
+                },
+                {
+                    "t": "delete",
+                    "p": "callsign",
+                    "pt": "msg"
+                }
+            ],
+            "action": "",
+            "property": "",
+            "from": "",
+            "to": "",
+            "reg": false,
+            "x": 860,
+            "y": 300,
+            "wires": [
+                []
+            ]
+        },
+        {
+            "id": "dd4445d367d27707",
+            "type": "function",
+            "z": "6486a4a1329b9fe9",
+            "d": true,
+            "name": "Other Filters",
+            "func": "// Access the global context\nlet filters = env.get(\"addFilterList\") || [];\nvar payloadName = msg.payload.title;\n\n// Function to check if the payloadName exists in the takClient array\nfunction callsignExists(filterss, name) {\n    for (var i = 0; i < filters.length; i++) {\n        var nameLower = name.toLowerCase();\n        if (nameLower.includes(filters[i].toLowerCase())) {\n            return true; // Match found\n        }\n    }\n    return false; // No match found\n}\n\n// Check for existence of the payload name\nif (env.get(\"addFilterList\") !== undefined && env.get(\"addFilterList\") !== null && env.get(\"addFilterList\") !== \"\"){\n    if (callsignExists(filters, payloadName)) {\n        msg.filteredClient = true;\n        return msg; // No action taken\n    } else {\n        msg.filteredClient = false;\n        return msg; //Pass the **payload as is**\n    }\n} else {\n    msg.filteredClient = false;\n    return msg;\n}",
+            "outputs": 1,
+            "timeout": 0,
+            "noerr": 0,
+            "initialize": "",
+            "finalize": "",
+            "libs": [],
+            "x": 980,
+            "y": 180,
+            "wires": [
+                [
+                    "bd1d7e5f7447dc40"
+                ]
+            ]
+        }
     ]
 }
