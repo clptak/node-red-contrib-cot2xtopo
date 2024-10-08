@@ -1,7 +1,7 @@
 {
   "name": "node-red-contrib-cot2xtopo",
-  "version": "1.1.4",
-  "description": "This module parses 'live tracks' in network kmls from services such as CalTopo / SARTopo and converts the last coordinate in the live tracking folder to a position location information (pli) cursor-on-target (CoT) message to send to a Team Awareness Kit (TAK) Server or other TAK end users and parses a stream of CoT messages and sends them to CalTopo maps using their conenct key and position API",
+  "version": "2.0.0",
+  "description": "This module parses 'live tracks' from a Caltopo map json endpoint and converts the last coordinate in the live tracking folder to a position location information (pli) cursor-on-target (CoT) message to send to a Team Awareness Kit (TAK) Server or other TAK end users and parses a stream of CoT messages and sends them to CalTopo maps using their conenct key and position API",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
